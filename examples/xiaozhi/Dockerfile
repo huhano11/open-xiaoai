@@ -15,11 +15,11 @@ ENV RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
 ENV RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
+# 激活 Rust 环境，确保 cargo 可用
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 # 安装 uv 工具
 COPY --from=ghcr.io/astral-sh/uv:0.7 /uv /uvx /bin/
-
-# 激活 Rust 环境
-ENV PATH="$HOME/.cargo/bin:$PATH"
 
 # 设置工作目录
 WORKDIR /app
@@ -28,8 +28,8 @@ WORKDIR /app
 COPY . .
 COPY client-rust ./client-rust
 
-# 修改 Cargo.toml 路径并编译（支持缓存）
-RUN sed -i 's/\.\.\/\.\.\/packages\///g' Cargo.toml \
+# 修改 Cargo.toml 路径并编译
+RUN sed -i 's|\.\./\.\./packages/||g' Cargo.toml \
     && cargo build --release
 
 # 设置 PyPI 加速源（提前设置）
@@ -54,8 +54,6 @@ RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc
     && apt-get update \
     && apt-get install -y --no-install-recommends libopus-dev \
     && rm -rf /var/lib/apt/lists/*
-
-
 
 ENV CLI=true
 WORKDIR /app
