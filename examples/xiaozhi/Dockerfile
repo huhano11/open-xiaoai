@@ -3,9 +3,9 @@ FROM python:3.12-bullseye AS builder
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # 设置国内 apt 源（可选，Debian 使用阿里云或清华源）
-RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
-    && apt-get update && apt-get install -y --no-install-recommends \
-    curl build-essential libopus-dev ca-certificates pkg-config \
+# 更新源
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl build-essential libopus-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置 Rust 国内镜像并安装 Rust
