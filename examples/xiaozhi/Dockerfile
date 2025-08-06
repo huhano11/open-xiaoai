@@ -57,8 +57,9 @@ WORKDIR /app
 
 # 复制构建产物
 COPY --from=builder /app/.venv /app/.venv
-COPY examples/xiaozhi/main.py .
-COPY examples/xiaozhi/xiaozhi ./xiaozhi
+COPY main.py .
+COPY xiaozhi ./xiaozhi
+
 
 # 启动
 CMD ["/bin/bash", "-c", "source /app/.venv/bin/activate && python xiaozhi/services/audio/kws/keywords.py && python main.py"]
