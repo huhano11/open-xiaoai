@@ -24,7 +24,7 @@ WORKDIR /app
 
 # 复制整个当前目录（所有代码和配置文件）
 COPY . .
-COPY packages/client-rust ./client-rust
+COPY client-rust ./client-rust
 
 # 修改 Cargo.toml 路径并编译（支持缓存）
 RUN sed -i 's|\.\./\.\./packages/||g' Cargo.toml && \

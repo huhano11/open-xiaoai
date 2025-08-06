@@ -2,9 +2,9 @@
 **/*
 
 # Rust
-!packages/client-rust/src
-!packages/client-rust/Cargo.toml
-!packages/client-rust/Cargo.lock
+!examples/xiaozhi/client-rust/src
+!examples/xiaozhi/client-rust/Cargo.toml
+!examples/xiaozhi/client-rust/Cargo.lock
 
 # MiGPT
 !examples/migpt/src

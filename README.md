@@ -46,7 +46,7 @@
 本项目由 Client 端 + Server 端两部分组成，你可以按照以下顺序运行该项目：
 
 1. 刷机更新小爱音箱补丁固件，开启并 SSH 连接到小爱音箱 👉 [教程](docs/flash.md)
-2. 在小爱音箱上安装运行 Client 端补丁程序 👉 [教程](packages/client-rust/README.md)
+2. 在小爱音箱上安装运行 Client 端补丁程序 👉 [教程](examples/xiaozhi/client-rust/README.md)
 3. 运行以下演示程序，体验小爱音箱的全新能力 ✨
    - 👉 [小爱音箱接入小智 AI](examples/xiaozhi/README.md)
    - 👉 [小爱音箱自定义唤醒词](examples/kws/README.md)
