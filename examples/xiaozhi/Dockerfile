@@ -29,8 +29,8 @@ COPY . .
 COPY client-rust ./client-rust
 
 # 修改 Cargo.toml 路径并编译（支持缓存）
-RUN sed -i 's|\.\./\.\./packages/||g' Cargo.toml && \
-    cargo build --release
+RUN sed -i 's/\.\.\/\.\.\/packages\///g' Cargo.toml \
+    && cargo build --release
 
 # 设置 PyPI 加速源（提前设置）
 ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
