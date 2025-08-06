@@ -46,12 +46,15 @@ RUN uv run maturin build --release && uv remove maturin
 # ============
 # 最终运行镜像
 # ============
-FROM python:3.12-slim
+FROM python:3.12-bullseye
 
 # 更新源 & 安装依赖
 # 更新源
-RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
-RUN apt-get update && apt-get install -y --no-install-recommends libopus-dev && rm -rf /var/lib/apt/lists/*
+RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends libopus-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 
 
 ENV CLI=true
