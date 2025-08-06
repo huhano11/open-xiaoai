@@ -47,8 +47,8 @@ RUN uv run maturin build --release && uv remove maturin
 FROM python:3.12-slim
 
 # 更新源 & 安装依赖
-RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
-    && apt-get update && apt-get install -y --no-install-recommends \
+# 更新源
+RUN apt-get update && apt-get install -y --no-install-recommends \
     libopus-dev \
     && rm -rf /var/lib/apt/lists/*
 
