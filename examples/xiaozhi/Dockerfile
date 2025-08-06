@@ -30,6 +30,8 @@ COPY packages/client-rust ./client-rust
 RUN sed -i 's/\.\.\/\.\.\/packages\///g' Cargo.toml \
     && cargo build --release
 
+ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
 # 安装依赖
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv remove pyaudio && uv sync --locked --no-install-project --no-editable

@@ -63,8 +63,8 @@ APP_CONFIG = {
         "min_silence_duration": 500,
     },
     "xiaozhi": {
-        "OTA_URL": "https://api.tenclass.net/xiaozhi/ota/",
-        "WEBSOCKET_URL": "wss://api.tenclass.net/xiaozhi/v1/",
+        "OTA_URL": "https://xiaozhi.me/api/xiaozhi/ota/",
+        "WEBSOCKET_URL": "wss://xiaozhi.me/api/xiaozhi/v1/",
         "WEBSOCKET_ACCESS_TOKEN": "", #（可选）一般用不到这个值
         "DEVICE_ID": "", #（可选）默认自动生成
         "VERIFICATION_CODE": "", # 首次登陆时，验证码会在这里更新
