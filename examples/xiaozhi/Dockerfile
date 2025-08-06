@@ -4,9 +4,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # 设置国内 apt 源（可选，Debian 使用阿里云或清华源）
 # 更新源
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl build-essential libopus-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends curl build-essential libopus-dev
+RUN rm -rf /var/lib/apt/lists/*
+
 
 # 设置 Rust 国内镜像并安装 Rust
 ENV RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
@@ -48,9 +50,9 @@ FROM python:3.12-slim
 
 # 更新源 & 安装依赖
 # 更新源
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libopus-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
+RUN apt-get update && apt-get install -y --no-install-recommends libopus-dev && rm -rf /var/lib/apt/lists/*
+
 
 ENV CLI=true
 WORKDIR /app
