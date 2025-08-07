@@ -31,8 +31,7 @@ COPY Cargo.toml Cargo.lock ./
 RUN mkdir -p client-rust/src && echo "fn main() {}" > client-rust/src/main.rs
 
 # 预构建 client-rust 依赖
-RUN sed -i 's|../../packages/client-rust|./client-rust|g' Cargo.toml && \
-    cd client-rust && cargo build --release
+RUN cd client-rust && cargo build --release
 
 # 复制真实 Rust 代码
 COPY client-rust/src ./client-rust/src
@@ -47,12 +46,12 @@ COPY pyproject.toml ./
 ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 ENV UV_HTTP_TIMEOUT=300
 
+# 复制其他项目文件（Python代码等）
+COPY . .
+
 # 安装 Python 依赖
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv remove pyaudio && uv sync --locked --no-install-project --no-editable
-
-# 复制其他项目文件（Python代码等）
-COPY . .
 
 # 构建 Python 扩展模块
 RUN uv run maturin build --release && uv remove maturin
