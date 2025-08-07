@@ -34,6 +34,7 @@ RUN sed -i 's|\.\./\.\./packages/||g' Cargo.toml \
 
 # 设置 PyPI 加速源（提前设置）
 ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+ENV UV_HTTP_TIMEOUT=300
 
 # 安装 Python 依赖
 RUN --mount=type=cache,target=/root/.cache/uv \
