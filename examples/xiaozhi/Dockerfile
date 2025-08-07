@@ -47,18 +47,14 @@ COPY pyproject.toml ./
 ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 ENV UV_HTTP_TIMEOUT=300
 
-# 安装 Python 依赖，进入 rust 目录执行
+# 安装 Python 依赖
 RUN --mount=type=cache,target=/root/.cache/uv \
-    cd client-rust && uv remove pyaudio && uv sync --locked --no-install-project --no-editable
-
-# 构建 wheel 并移除 maturin，进入 rust 目录执行
-RUN cd client-rust && uv run maturin build --release && uv remove maturin
-
+    uv remove pyaudio && uv sync --locked --no-install-project --no-editable
 
 # 复制其他项目文件（Python代码等）
 COPY . .
 
-# 构建 wheel 并移除 maturin
+# 构建 Python 扩展模块
 RUN uv run maturin build --release && uv remove maturin
 
 
