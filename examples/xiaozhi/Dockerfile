@@ -49,6 +49,9 @@ ENV UV_HTTP_TIMEOUT=300
 # 复制其他项目文件（Python代码等）
 COPY . .
 
+# 下载 silero_vad.onnx 模型
+RUN wget https://models.silero.ai/models/vad_models/en/v3/silero_vad.onnx -O /app/xiaozhi/models/silero_vad.onnx
+
 # 安装 Python 依赖
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv remove pyaudio && uv sync --locked --no-install-project --no-editable
