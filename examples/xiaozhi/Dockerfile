@@ -29,9 +29,9 @@ COPY client-rust/Cargo.lock ./client-rust/Cargo.lock
 # 创建一个空的 main.rs 避免 cargo build 报错
 RUN mkdir -p client-rust/src && echo "fn main() {}" > client-rust/src/main.rs
 
-# 先构建依赖，利用缓存
-RUN sed -i 's|\.\./\.\./packages/||g' client-rust/Cargo.toml && \
-    cd client-rust && cargo build --release || true
+# 预构建 client-rust 依赖
+RUN sed -i 's|../../packages/client-rust|./client-rust|g' Cargo.toml && \
+    cd client-rust && cargo build --release
 
 # 复制真实 Rust 代码
 COPY client-rust/src ./client-rust/src
