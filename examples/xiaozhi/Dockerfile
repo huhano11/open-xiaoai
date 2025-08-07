@@ -24,13 +24,23 @@ COPY --from=ghcr.io/astral-sh/uv:0.7 /uv /uvx /bin/
 # 设置工作目录
 WORKDIR /app
 
-# 复制整个当前目录（所有代码和配置文件）
-COPY . .
-COPY client-rust ./client-rust
+# 优先复制 Rust 构建相关文件，利用缓存
+COPY client-rust/Cargo.toml ./client-rust/Cargo.toml
+COPY client-rust/Cargo.lock ./client-rust/Cargo.lock
 
-# 修改 Cargo.toml 路径并编译
-RUN sed -i 's|\.\./\.\./packages/||g' Cargo.toml \
-    && cargo build --release
+# 创建一个空的 main.rs（为了 cargo 构建时不报错）
+RUN mkdir -p client-rust/src && echo "fn main() {}" > client-rust/src/main.rs
+
+# 先构建依赖，这一步缓存就能保住
+RUN sed -i 's|\.\./\.\./packages/||g' client-rust/Cargo.toml && \
+    cd client-rust && cargo build --release || true
+
+# 再复制真实源代码（只有代码变动时才重新触发编译）
+COPY client-rust/src ./client-rust/src
+
+# 重新编译（这次只编译业务逻辑，依赖会用缓存）
+RUN cd client-rust && cargo build --release
+
 
 # 设置 PyPI 加速源（提前设置）
 ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
