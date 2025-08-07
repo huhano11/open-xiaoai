@@ -18,6 +18,7 @@ def setup_graceful_shutdown():
     signal.signal(signal.SIGINT, signal_handler)
 
 
+
 if __name__ == "__main__":
     XiaoAI.setup_mode()
     setup_graceful_shutdown()
