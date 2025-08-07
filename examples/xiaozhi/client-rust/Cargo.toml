@@ -11,6 +11,12 @@ panic = "abort"
 strip = true
 debug = false
 
+[profile.docker]
+inherits = "release"
+lto = false           # 关闭LTO，大幅减少编译时间
+codegen-units = 16    # 启用并行编译
+opt-level = 2         # 适中的优化级别
+
 [workspace.metadata.cross.target.armv7-unknown-linux-gnueabihf]
 image = "ghcr.io/cross-rs/armv7-unknown-linux-gnueabihf:0.2.5"
 

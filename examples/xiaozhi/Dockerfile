@@ -31,13 +31,13 @@ COPY Cargo.toml Cargo.lock ./
 RUN mkdir -p client-rust/src && echo "fn main() {}" > client-rust/src/main.rs
 
 # 预构建 client-rust 依赖
-RUN cd client-rust && cargo build --release
+RUN cd client-rust && cargo build --profile docker
 
 # 复制真实 Rust 代码
 COPY client-rust/src ./client-rust/src
 
 # 重新编译 Rust 业务代码
-RUN cd client-rust && cargo build --release
+RUN cd client-rust && cargo build --profile docker
 
 # **核心改动**：先复制 pyproject.toml，保证 uv 依赖安装命令能找到它
 COPY pyproject.toml ./
@@ -54,7 +54,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv remove pyaudio && uv sync --locked --no-install-project --no-editable
 
 # 构建 Python 扩展模块
-RUN uv run maturin build --release && uv remove maturin
+RUN uv run maturin build --profile docker && uv remove maturin
 
 
 # =============
