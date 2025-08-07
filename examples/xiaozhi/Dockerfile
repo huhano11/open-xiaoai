@@ -25,6 +25,7 @@ WORKDIR /app
 # 复制 Rust 构建相关文件，利用缓存
 COPY client-rust/Cargo.toml ./client-rust/Cargo.toml
 COPY client-rust/Cargo.lock ./client-rust/Cargo.lock
+COPY Cargo.toml Cargo.lock ./
 
 # 创建一个空的 main.rs 避免 cargo build 报错
 RUN mkdir -p client-rust/src && echo "fn main() {}" > client-rust/src/main.rs
