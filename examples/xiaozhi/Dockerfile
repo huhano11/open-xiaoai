@@ -3,12 +3,10 @@ FROM python:3.12-bullseye AS builder
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # 设置国内 apt 源（可选，Debian 使用阿里云或清华源）
-# 更新源
 RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends curl build-essential libopus-dev
 RUN rm -rf /var/lib/apt/lists/*
-
 
 # 设置 Rust 国内镜像并安装 Rust
 ENV RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static
@@ -24,25 +22,27 @@ COPY --from=ghcr.io/astral-sh/uv:0.7 /uv /uvx /bin/
 # 设置工作目录
 WORKDIR /app
 
-# 优先复制 Rust 构建相关文件，利用缓存
+# 复制 Rust 构建相关文件，利用缓存
 COPY client-rust/Cargo.toml ./client-rust/Cargo.toml
 COPY client-rust/Cargo.lock ./client-rust/Cargo.lock
 
-# 创建一个空的 main.rs（为了 cargo 构建时不报错）
+# 创建一个空的 main.rs 避免 cargo build 报错
 RUN mkdir -p client-rust/src && echo "fn main() {}" > client-rust/src/main.rs
 
-# 先构建依赖，这一步缓存就能保住
+# 先构建依赖，利用缓存
 RUN sed -i 's|\.\./\.\./packages/||g' client-rust/Cargo.toml && \
     cd client-rust && cargo build --release || true
 
-# 再复制真实源代码（只有代码变动时才重新触发编译）
+# 复制真实 Rust 代码
 COPY client-rust/src ./client-rust/src
 
-# 重新编译（这次只编译业务逻辑，依赖会用缓存）
+# 重新编译 Rust 业务代码
 RUN cd client-rust && cargo build --release
 
+# **核心改动**：先复制 pyproject.toml，保证 uv 依赖安装命令能找到它
+COPY pyproject.toml ./
 
-# 设置 PyPI 加速源（提前设置）
+# 设置 PyPI 加速源和超时
 ENV UV_PYPI_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
 ENV UV_HTTP_TIMEOUT=300
 
@@ -50,17 +50,18 @@ ENV UV_HTTP_TIMEOUT=300
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv remove pyaudio && uv sync --locked --no-install-project --no-editable
 
+# 复制其他项目文件（Python代码等）
+COPY . .
+
 # 构建 wheel 并移除 maturin
 RUN uv run maturin build --release && uv remove maturin
 
 
-# ============
+# =============
 # 最终运行镜像
-# ============
+# =============
 FROM python:3.12-bullseye
 
-# 更新源 & 安装依赖
-# 更新源
 RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list \
     && apt-get update \
     && apt-get install -y --no-install-recommends libopus-dev \
@@ -69,11 +70,8 @@ RUN sed -i 's|http://deb.debian.org|https://mirrors.tuna.tsinghua.edu.cn|g' /etc
 ENV CLI=true
 WORKDIR /app
 
-# 复制构建产物
 COPY --from=builder /app/.venv /app/.venv
 COPY main.py .
 COPY xiaozhi ./xiaozhi
 
-
-# 启动
 CMD ["/bin/bash", "-c", "source /app/.venv/bin/activate && python xiaozhi/services/audio/kws/keywords.py && python main.py"]
