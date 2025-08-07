@@ -71,7 +71,6 @@ ENV CLI=true
 WORKDIR /app
 
 COPY --from=builder /app/.venv /app/.venv
-COPY main.py .
-COPY xiaozhi ./xiaozhi
+COPY --from=builder /app .
 
 CMD ["/bin/bash", "-c", "source /app/.venv/bin/activate && python xiaozhi/services/audio/kws/keywords.py && python main.py"]
